@@ -64,6 +64,14 @@ const PORT = process.env.PORT || 5000
 // Wait for database connection before starting server
 const db = require("./config/database")
 
+// Log target DB connection info (sanitized)
+console.log("DB connect target:", {
+  host: process.env.DB_HOST || "localhost",
+  port: Number(process.env.DB_PORT || 3306),
+  database: process.env.DB_NAME || "qcs_db",
+  ssl: Boolean(process.env.DB_SSL || process.env.DB_SSL_MODE),
+})
+
 db.getConnection()
   .then((connection) => {
     connection.release()

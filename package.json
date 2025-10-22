@@ -6,7 +6,8 @@
   "type": "commonjs",
   "scripts": {
     "start": "node server.js",
-    "seed:photos": "node scripts/seed-sample-photos.js"
+    "seed:photos": "node scripts/seed-sample-photos.js",
+    "test:db": "node scripts/test-db-connection.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
