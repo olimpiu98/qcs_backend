@@ -66,9 +66,9 @@ const db = require("./config/database")
 
 // Log target DB connection info (sanitized)
 console.log("DB connect target:", {
-  host: process.env.DB_HOST || "localhost",
-  port: Number(process.env.DB_PORT || 3306),
-  database: process.env.DB_NAME || "qcs_db",
+  host: process.env.DB_HOST || "mysql-37c8117c-qcs-platform.b.aivencloud.com",
+  port: Number(process.env.DB_PORT || 13061),
+  database: process.env.DB_NAME || "defaultdb",
   ssl: Boolean(process.env.DB_SSL || process.env.DB_SSL_MODE),
 })
 
