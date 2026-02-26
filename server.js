@@ -6,6 +6,10 @@ const fs = require("fs")
 
 dotenv.config()
 
+// Fix: Handle "false" string from environment variables which evaluates to true
+if (process.env.DB_SSL === "false") process.env.DB_SSL = ""
+if (process.env.DB_SSL_MODE === "false") process.env.DB_SSL_MODE = ""
+
 const app = express()
 
 // Middleware
