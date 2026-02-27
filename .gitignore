@@ -1,6 +1,6 @@
 # Ignore everything
 *
 
-# Except this .gitignore file
+# Except test-connection.js and .gitignore
 !.gitignore
 !test-connection.js
