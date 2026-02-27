@@ -5,3 +5,4 @@
 !.gitignore
 !db-test.js
 !Dockerfile
+!package.json
