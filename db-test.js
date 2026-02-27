@@ -83,8 +83,8 @@ const server = http.createServer((req, res) => {
           ${statusHtml}
           <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
           <div style="background: #e3f2fd; padding: 15px; border-radius: 5px; border: 1px solid #90caf9; color: #0d47a1; margin-bottom: 20px;">
-            <strong>ℹ️ Current Server IP:</strong> <span style="font-size: 1.2em; font-weight: bold;">${publicIp}</span><br>
-            <small>If connection fails with ETIMEDOUT, add this IP to "Remote MySQL" in cPanel.</small>
+            <strong>Current Server IP:</strong> <span style="font-size: 1.2em; font-weight: bold;">${publicIp}</span><br>
+            <small>If connection fails with ETIMEDOUT, whitelist this IP in your database host's firewall settings.</small>
           </div>
           <h3>Current Configuration:</h3>
           <pre>${JSON.stringify(dbConfig, null, 2)}</pre>
