@@ -1,0 +1,8 @@
+# Ignore everything
+*
+
+# Except test-connection.js and .gitignore
+!.gitignore
+!db-test.js
+!Dockerfile
+!package.json
