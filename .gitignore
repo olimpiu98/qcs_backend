@@ -4,3 +4,4 @@
 # Except test-connection.js and .gitignore
 !.gitignore
 !test-connection.js
+!Dockerfile
