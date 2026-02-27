@@ -1,5 +1,6 @@
 const mysql = require('mysql2');
 const http = require('http');
+const https = require('https');
 
 const port = process.env.PORT || 10000;
 
@@ -15,6 +16,16 @@ const server = http.createServer((req, res) => {
     port: process.env.DB_PORT || 3306
   };
 
+  // Fetch Public IP to help with whitelisting
+  const getPublicIp = () => new Promise(resolve => {
+    https.get('https://api.ipify.org', (r) => {
+      let data = '';
+      r.on('data', c => data += c);
+      r.on('end', () => resolve(data));
+    }).on('error', () => resolve('Unknown'));
+  });
+
+  getPublicIp().then(publicIp => {
   // Attempt connection
   const connection = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -32,14 +43,14 @@ const server = http.createServer((req, res) => {
     if (err) {
       console.error('DB Error:', err.message);
       statusHtml = `
-        <h1 style="color: #d32f2f">❌ Connection Failed</h1>
+        <h1 style="color: #d32f2f">Connection Failed</h1>
         <div style="background: #ffebee; padding: 15px; border-radius: 5px; border: 1px solid #ef9a9a; color: #c62828;">
           <strong>Error Code:</strong> ${err.code}<br>
           <strong>Message:</strong> ${err.message}
         </div>
         <p><strong>Troubleshooting Hints:</strong></p>
         <ul>
-          <li><strong>ETIMEDOUT:</strong> The firewall at <em>${dbConfig.host}</em> is blocking the connection. You must whitelist the IP.</li>
+          <li><strong>ETIMEDOUT:</strong> The firewall at <em>${dbConfig.host}</em> is blocking the connection. Whitelist the IP below.</li>
           <li><strong>ER_ACCESS_DENIED_ERROR:</strong> Check your username or password.</li>
           <li><strong>ENOTFOUND:</strong> The hostname is incorrect.</li>
         </ul>
@@ -71,6 +82,10 @@ const server = http.createServer((req, res) => {
         <div class="card">
           ${statusHtml}
           <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+          <div style="background: #e3f2fd; padding: 15px; border-radius: 5px; border: 1px solid #90caf9; color: #0d47a1; margin-bottom: 20px;">
+            <strong>ℹ️ Current Server IP:</strong> <span style="font-size: 1.2em; font-weight: bold;">${publicIp}</span><br>
+            <small>If connection fails with ETIMEDOUT, add this IP to "Remote MySQL" in cPanel.</small>
+          </div>
           <h3>Current Configuration:</h3>
           <pre>${JSON.stringify(dbConfig, null, 2)}</pre>
           <br>
@@ -82,6 +97,7 @@ const server = http.createServer((req, res) => {
 
     res.writeHead(200, { 'Content-Type': 'text/html' });
     res.end(html);
+  });
   });
 });
 
