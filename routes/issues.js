@@ -237,13 +237,10 @@ router.get("/:id", authenticateToken, async (req, res) => {
 // Create new issue
 router.post(
   "/",
-  // Example middleware pipeline for docs/screenshots
   verifyToken,
-  upload.array("photos", 10),
   validate(issueCreateSchema),
   async (req, res) => {
     const connection = await db.getConnection()
-
     try {
       await connection.beginTransaction()
 
@@ -254,7 +251,6 @@ router.post(
       }
 
       const issueNumber = await generateIssueNumber()
-
       const {
         checkType,
         haulier,
@@ -274,9 +270,9 @@ router.post(
         issueType,
         description,
         notes,
+        photos, // Array of image URLs
       } = req.body
 
-      // Build insert payload using object mapping so optional fields are handled cleanly
       const insertData = {
         issue_number: issueNumber,
         check_type: checkType,
@@ -302,24 +298,27 @@ router.post(
       }
 
       const [result] = await connection.query('INSERT INTO issues SET ?', [insertData])
-
       const issueId = result.insertId
 
-      // Upload photos if any
-      if (req.files && req.files.length > 0) {
-        for (const file of req.files) {
-          await connection.query(
-            "INSERT INTO issue_photos (issue_id, file_name, file_path, file_size, mime_type, uploaded_by) VALUES (?, ?, ?, ?, ?, ?)",
-            [issueId, file.originalname, file.filename, file.size, file.mimetype, req.user.id],
-          )
-        }
+      // Insert photo URLs if provided
+      let photoArr = []
+      if (Array.isArray(photos)) {
+        photoArr = photos
+      } else if (typeof photos === 'string' && photos) {
+        // If sent as comma-separated string
+        photoArr = photos.split(',').map(s => s.trim()).filter(Boolean)
+      }
+      for (const url of photoArr) {
+        // Extract file name from URL
+        let fileName = url.split('/').pop()
+        await connection.query(
+          "INSERT INTO issue_photos (issue_id, file_name, file_path, uploaded_by) VALUES (?, ?, ?, ?)",
+          [issueId, fileName, url, req.user.id]
+        )
       }
 
-      // Create audit trail
       await createAuditTrail(issueId, req.user.id, "created", null, "pending", "Issue created", connection)
-
       await connection.commit()
-
       res.status(201).json({
         message: "Issue created successfully",
         issueId,

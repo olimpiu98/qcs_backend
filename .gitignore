@@ -15,3 +15,6 @@ build/
 *.swp
 *.swo
 old/node_modules/
+qcs_frontend/
+old/
+qcs_full_schema.sql

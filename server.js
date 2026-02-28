@@ -47,6 +47,24 @@ app.use("/api/suppliers", require("./routes/suppliers"))
 app.use("/api/products", require("./routes/products"))
 app.use("/api/issues", require("./routes/issues"))
 
+// Root endpoint
+app.get("/", (req, res) => {
+  res.json({
+    message: "Welcome to QCS Backend API!",
+    status: "ok",
+    docs: "https://qcs-backend.onrender.com/docs",
+    available_endpoints: [
+      "/api/auth",
+      "/api/users",
+      "/api/suppliers",
+      "/api/products",
+      "/api/issues",
+      "/health"
+    ],
+    timestamp: new Date().toISOString()
+  })
+})
+
 // Health check
 app.get("/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() })
